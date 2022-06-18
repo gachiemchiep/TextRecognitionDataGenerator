@@ -1,6 +1,7 @@
 import os
 import random as rnd
-
+from fontTools.ttLib import TTFont
+from fontTools.unicode import Unicode
 from PIL import Image, ImageFilter, ImageStat
 
 from trdg import computer_text_generator, background_generator, distorsion_generator
@@ -69,6 +70,14 @@ class FakeTextDataGenerator(object):
                 raise ValueError("Vertical handwritten text is unavailable")
             image, mask = handwritten_text_generator.generate(text, text_color)
         else:
+
+            # Check whether font have enough glyph for input text #
+            font = TTFont('/path/to/font.ttf')
+            for char in text:
+                for table in font['cmap'].tables:
+                    if not (ord(glyph) in table.cmap.keys()):
+                        return 
+
             image, mask = computer_text_generator.generate(
                 text,
                 font,
